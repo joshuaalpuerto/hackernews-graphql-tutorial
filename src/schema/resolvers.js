@@ -19,9 +19,11 @@ module.exports = {
   },
 
   Mutation: {
-    createLink: async (_, args, { mongo: { Links } }) => {
-      const response = await Links.insert(args);
-      return Object.assign({ id: response.insertedIds[0] }, args);
+    createLink: async (_, args, { mongo: { Links }, user }) => {
+      console.log(user, 'users')
+      const newLink = Object.assign({ postedById: user && user._id }, args)
+      const response = await Links.insert({ ...newLink });
+      return Object.assign({ id: response.insertedIds[0] }, newLink);
     },
 
     // Add this block right after the `createLink` mutation resolver.
@@ -33,8 +35,9 @@ module.exports = {
           email: args.authProvider.email.email,
           password: args.authProvider.email.password,
       };
-      const response = await Users.insert(newUser);
-      return Object.assign({ id: response.insertedIds[0] }, newUser);
+      // we need to spread this since its mutating our object and its gonna be hard for us to debug it.
+      const response = await Users.insert({ ...newUser });
+      return Object.assign({ id: response.insertedIds[0] }, newUser)
     },
 
     signinUser: async (root, args, { mongo: { Users } }) => {
@@ -49,7 +52,10 @@ module.exports = {
   },
 
   Link: {
-    id: object => object._id || object.id
+    id: object => object._id || object.id,
+    postedBy: async ({ postedById }, _, { mongo: { Users } }) => {
+      return await Users.findOne({ _id: postedById });
+    },
   },
 
   User: {

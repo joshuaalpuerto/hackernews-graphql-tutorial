@@ -21,9 +21,20 @@ module.exports = {
   Mutation: {
     createLink: async (_, args, { mongo: { Links } }) => {
       const response = await Links.insert(args);
-      return Object.assign({
-        id: response.insertedIds[0]
-      }, args);
+      return Object.assign({ id: response.insertedIds[0] }, args);
+    },
+
+    // Add this block right after the `createLink` mutation resolver.
+    createUser: async (_, args, { mongo: { Users } }) => {
+      // You need to convert the given arguments into the format for the
+      // `User` type, grabbing email and password from the "authProvider".
+      const newUser = {
+          name: args.name,
+          email: args.authProvider.email.email,
+          password: args.authProvider.email.password,
+      };
+      const response = await Users.insert(newUser);
+      return Object.assign({ id: response.insertedIds[0] }, newUser);
     },
   },
 

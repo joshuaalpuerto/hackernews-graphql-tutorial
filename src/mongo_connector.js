@@ -7,6 +7,6 @@ module.exports = async () => {
   const dbHackerNews = db.db('hackernews')
   return { 
     Links: dbHackerNews.collection('links'),
-    Users: db.collection('users'),
+    Users: dbHackerNews.collection('users'),
   };
 }

@@ -66,6 +66,10 @@ module.exports = {
     postedBy: async ({ postedById }, _, { mongo: { Users } }) => {
       return await Users.findOne({ _id: postedById });
     },
+
+    votes: async ({ _id }, data, { mongo: { Votes } }) => {
+      return await Votes.find({ linkId: _id }).toArray();
+    },
   },
 
   User: {

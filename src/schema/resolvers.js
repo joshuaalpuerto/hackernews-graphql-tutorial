@@ -1,3 +1,5 @@
+const { ObjectID } = require('mongodb')
+
 const links = [
   {
     id: 1,
@@ -23,6 +25,15 @@ module.exports = {
       const newLink = Object.assign({ postedById: user && user._id }, args)
       const response = await Links.insert({ ...newLink });
       return Object.assign({ id: response.insertedIds[0] }, newLink);
+    },
+
+    createVote: async (_, { linkId }, { mongo: { Votes }, user }) => {
+      const newVote = {
+        userId: user && user._id,
+        linkId: new ObjectID(linkId),
+      };
+      const response = await Votes.insert({ ...newVote });
+      return Object.assign({ id: response.insertedIds[0] }, newVote);
     },
 
     // Add this block right after the `createLink` mutation resolver.
@@ -51,7 +62,7 @@ module.exports = {
   },
 
   Link: {
-    id: object => object._id || object.id,
+    id: root => root._id || root.id,
     postedBy: async ({ postedById }, _, { mongo: { Users } }) => {
       return await Users.findOne({ _id: postedById });
     },
@@ -59,6 +70,18 @@ module.exports = {
 
   User: {
     // Convert the "_id" field from MongoDB to "id" from the schema.
-    id: object => object._id || object.id,
+    id: root => root._id || root.id,
+  },
+
+  Vote: {
+    id: root => root._id || root.id,
+  
+    user: async ({ userId }, data, { mongo: { Users } }) => {
+      return await Users.findOne({ _id: userId });
+    },
+  
+    link: async ({ linkId }, data, { mongo: { Links } }) => {
+      return await Links.findOne({ _id: linkId });
+    },
   },
 };

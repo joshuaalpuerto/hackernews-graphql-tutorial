@@ -25,12 +25,13 @@ const typeDefs = `
     signinUser(email: AUTH_PROVIDER_EMAIL): SigninPayload!
 
   }
-  
+
   type Link {
     id: ID!
     url: String!
     description: String!
     postedBy: User
+    votes: [Vote!]!
   }
 
   type Vote {

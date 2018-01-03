@@ -5,12 +5,12 @@ const bodyParser = require('body-parser');
 
 // This package will handle GraphQL server requests and responses
 // for you, based on your schema.
-const {graphqlExpress} = require('apollo-server-express');
+const { graphqlExpress } = require('apollo-server-express');
 
 const schema = require('./schema');
 
 var app = express();
-app.use('/graphql', bodyParser.json(), graphqlExpress({schema}));
+app.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
 
 const PORT = 3000
 app.listen(PORT, () => {

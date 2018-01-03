@@ -6,19 +6,14 @@ const resolvers = require('./resolvers');
 
 // Define your types here.
 const typeDefs = `
-  type Link {
-    id: ID!
-    url: String!
-    description: String!
-    postedBy: User
-  }
-
   type Query {
     allLinks: [Link!]!
   }
 
   type Mutation {
     createLink(url: String!, description: String!): Link
+
+    createVote(linkId: ID!): Vote
 
     # Note that this mutation could receive the email and password directly
     # as arguments, with no problem. You're just using this "authProvider"
@@ -28,7 +23,22 @@ const typeDefs = `
     createUser(name: String!, authProvider: AuthProviderSignupData!): User
 
     signinUser(email: AUTH_PROVIDER_EMAIL): SigninPayload!
+
   }
+  
+  type Link {
+    id: ID!
+    url: String!
+    description: String!
+    postedBy: User
+  }
+
+  type Vote {
+    id: ID!
+    user: User!
+    link: Link!
+  }
+
 
   type User {
     id: ID!

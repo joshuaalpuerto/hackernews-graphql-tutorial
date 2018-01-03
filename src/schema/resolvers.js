@@ -13,13 +13,21 @@ const links = [
 
 module.exports = {
   Query: {
-    allLinks: () => links,
+    allLinks: async (_, args, { mongo: { Links } } ) => {
+      return await Links.find({}).toArray();
+    },
   },
+
   Mutation: {
-    createLink: (_, data) => {
-      const newLink = Object.assign({id: (new Buffer(data.url, 'utf8')).toString('base64')}, data);
-      links.push(newLink);
-      return newLink;
-    }
+    createLink: async (_, args, { mongo: { Links } }) => {
+      const response = await Links.insert(args);
+      return Object.assign({
+        id: response.insertedIds[0]
+      }, args);
+    },
+  },
+
+  Link: {
+    id: object => object._id || object.id
   },
 };

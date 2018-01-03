@@ -18,6 +18,7 @@ const start = async () => {
   const buildOptions = async (req, res) => {
     const user = await authenticate(req, mongo.Users);
     return {
+      // works like dependency injection
       context: { mongo, user }, // This context object is passed to all resolvers.
       schema,
     };

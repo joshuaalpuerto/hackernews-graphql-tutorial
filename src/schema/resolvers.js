@@ -20,7 +20,6 @@ module.exports = {
 
   Mutation: {
     createLink: async (_, args, { mongo: { Links }, user }) => {
-      console.log(user, 'users')
       const newLink = Object.assign({ postedById: user && user._id }, args)
       const response = await Links.insert({ ...newLink });
       return Object.assign({ id: response.insertedIds[0] }, newLink);

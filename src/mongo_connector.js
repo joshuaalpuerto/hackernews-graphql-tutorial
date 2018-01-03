@@ -6,6 +6,7 @@ module.exports = async () => {
   const db = await MongoClient.connect(MONGO_URL);
   const dbHackerNews = db.db('hackernews')
   return { 
-    Links: dbHackerNews.collection('links')
+    Links: dbHackerNews.collection('links'),
+    Users: db.collection('users'),
   };
 }

@@ -15,6 +15,10 @@ const typeDefs = `
   type Query {
     allLinks: [Link!]!
   }
+
+  type Mutation {
+    createLink(url: String!, description: String!): Link
+  }
 `;
 
 // Generate the schema object from your types definition.

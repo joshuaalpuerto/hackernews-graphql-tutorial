@@ -12,7 +12,7 @@ const schema = require('./schema');
 var app = express();
 app.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
 
-const PORT = 3000
+const PORT = 4000
 app.listen(PORT, () => {
   console.log(`Hackernews GraphQL server running on port ${PORT}.`)
 });

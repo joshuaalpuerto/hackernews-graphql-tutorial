@@ -36,9 +36,24 @@ module.exports = {
       const response = await Users.insert(newUser);
       return Object.assign({ id: response.insertedIds[0] }, newUser);
     },
+
+    signinUser: async (root, args, { mongo: { Users } }) => {
+      const user = await Users.findOne({ email: args.email.email });
+      if (args.email.password === user.password) {
+        return {
+          token: `token-${user.email}`,
+          user
+        };
+      }
+    },
   },
 
   Link: {
     id: object => object._id || object.id
+  },
+
+  User: {
+    // Convert the "_id" field from MongoDB to "id" from the schema.
+    id: object => object._id || object.id,
   },
 };

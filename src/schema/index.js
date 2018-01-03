@@ -25,6 +25,8 @@ const typeDefs = `
     # make it easier to integrate this server implementation later with the 
     # code from the frontend tutorials.
     createUser(name: String!, authProvider: AuthProviderSignupData!): User
+
+    signinUser(email: AUTH_PROVIDER_EMAIL): SigninPayload!
   }
 
   type User {

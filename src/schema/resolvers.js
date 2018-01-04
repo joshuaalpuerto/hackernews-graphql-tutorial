@@ -1,6 +1,7 @@
 const { ObjectID } = require('mongodb')
 const { URL } = require('url');
 const ValidationErrors = require('../utils/validations')
+const pubsub = require('../pubsub');
 
 const links = [
   {
@@ -35,9 +36,15 @@ module.exports = {
   Mutation: {
     createLink: async (_, args, { mongo: { Links }, user }) => {
       assertValidLink(args)
-      const newLink = Object.assign({ postedById: user && user._id }, args)
-      const response = await Links.insert({ ...newLink });
-      return Object.assign({ id: response.insertedIds[0] }, newLink);
+      const bodyDocument = Object.assign({ postedById: user && user._id }, args)
+      const response = await Links.insert({ ...bodyDocument });
+
+      const newLink = Object.assign({ id: response.insertedIds[0] }, bodyDocument)
+      pubsub.publish('Link', {
+        Link: { mutation: 'CREATED', node: newLink }
+      });
+
+      return newLink;
     },
 
     createVote: async (_, { linkId }, { mongo: { Votes }, user }) => {
@@ -71,6 +78,12 @@ module.exports = {
           user
         };
       }
+    },
+  },
+
+  Subscription: {
+    Link: {
+      subscribe: () => pubsub.asyncIterator('Link'),
     },
   },
 

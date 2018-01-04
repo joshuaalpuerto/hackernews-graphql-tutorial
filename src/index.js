@@ -6,6 +6,9 @@ const bodyParser = require('body-parser');
 // This package will handle GraphQL server requests and responses
 // for you, based on your schema.
 const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
+const { execute, subscribe } = require('graphql');
+const { createServer } = require('http');
+const { SubscriptionServer } = require('subscriptions-transport-ws');
 
 const schema = require('./schema');
 const connectMongo = require('./mongo_connector');
@@ -16,6 +19,7 @@ const { authenticate } = require('./authentication');
 const start = async () => {
   const mongo = await connectMongo();
   const app = express();
+  const PORT = 4000
 
   const buildOptions = async (req, res) => {
     const  dataloaders = buildDataloaders(mongo)
@@ -36,10 +40,15 @@ const start = async () => {
   app.use('/graphiql', graphiqlExpress({
     endpointURL: '/graphql',
     passHeader: `'Authorization': 'bearer token-testdev@gmail.com'`,
+    subscriptionsEndpoint: `ws://localhost:${PORT}/subscriptions`
   }));
 
-  const PORT = 4000
-  app.listen(PORT, () => {
+  const server = createServer(app);
+  server.listen(PORT, () => {
+    SubscriptionServer.create(
+      {execute, subscribe, schema},
+      {server, path: '/subscriptions'},
+    );
     console.log(`Hackernews GraphQL server running on port ${PORT}.`)
   });
 }

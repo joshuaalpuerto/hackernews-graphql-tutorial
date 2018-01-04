@@ -9,6 +9,7 @@ const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
 
 const schema = require('./schema');
 const connectMongo = require('./mongo_connector');
+const buildDataloaders = require('./dataloaders');
 const { authenticate } = require('./authentication');
 
 const start = async () => {
@@ -19,7 +20,11 @@ const start = async () => {
     const user = await authenticate(req, mongo.Users);
     return {
       // works like dependency injection
-      context: { mongo, user }, // This context object is passed to all resolvers.
+      context: { 
+        mongo, 
+        user,
+        dataloaders: buildDataloaders(mongo),
+      }, // This context object is passed to all resolvers.
       schema,
     };
   };

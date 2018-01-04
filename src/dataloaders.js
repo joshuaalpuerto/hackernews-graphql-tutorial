@@ -1,6 +1,6 @@
 const DataLoader = require('dataloader');
 
-module.exports = ({ Users }) => {
+module.exports = ({ Users, Votes }) => {
   let userByIdLoader = new DataLoader(
     keys => batchUsersById(keys),
     { cacheKeyFn: key => key.toString() },
@@ -10,6 +10,32 @@ module.exports = ({ Users }) => {
     keys => batchUsersByUsername(keys),
     { cacheKeyFn: key => key.toString() },
   )
+
+  let votesByLinkIdLoader = new DataLoader(
+    keys => batchVotesByLinkId(keys),
+    { cacheKeyFn: key => key.toString() },
+  )
+
+  let votesByUserIdLoader = new DataLoader(
+    keys => batchVotesByUserId(keys),
+    { cacheKeyFn: key => key.toString() },
+  )
+
+  async function batchVotesByLinkId (ids) {
+    const votes = await Votes.find({ linkId: { $in: ids } }).toArray();
+    for (let vote of votes) {
+      votesByUserIdLoader.prime(vote.userId, vote);
+    }
+    return votes;
+  }
+
+  async function batchVotesByUserId (ids) {
+    const votes = await Votes.find({ userId: { $in: ids } }).toArray();
+    for (let vote of votes) {
+      votesByLinkIdLoader.prime(vote.linkId, vote);
+    }
+    return votes;
+  }
 
   async function batchUsersById (ids) {
     const users = await Users.find({ _id: { $in: ids } }).toArray();
@@ -29,6 +55,8 @@ module.exports = ({ Users }) => {
 
   return {
     userByIdLoader,
-    userByEmailLoader
+    userByEmailLoader,
+    votesByLinkIdLoader,
+    votesByUserIdLoader
   }
 };

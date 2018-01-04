@@ -66,7 +66,10 @@ module.exports = {
     postedBy: async ({ postedById }, _, { dataloaders: { userByIdLoader } }) => {
       return await userByIdLoader.load(postedById);
     },
-    votes: async ({ _id }, data, { mongo: { Votes } }) => {
+    votes: async ({ _id }, data, { dataloaders: { votesByLinkIdLoader }, mongo: { Votes } }) => {
+      // @TODO: we need to know why this throw error
+      // we need to make sure that this is working since this will be a performance issue for us.
+      // return await votesByLinkIdLoader.load(_id);
       return await Votes.find({ linkId: _id }).toArray();
     },
   },

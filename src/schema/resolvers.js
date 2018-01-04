@@ -1,6 +1,7 @@
 const { ObjectID } = require('mongodb')
 const { URL } = require('url');
 const ValidationErrors = require('../utils/validations')
+const { allLinksBuildFilter } = require('../utils/filters')
 const pubsub = require('../pubsub');
 
 const links = [
@@ -28,8 +29,9 @@ function assertValidLink ({ url }) {
 
 module.exports = {
   Query: {
-    allLinks: async (_, args, { mongo: { Links } } ) => {
-      return await Links.find({}).toArray();
+    allLinks: async (_, { filter }, { mongo: { Links, Users } } ) => {
+      let query = filter ? {$or: allLinksBuildFilter(filter)} : {};
+      return await Links.find(query).toArray();
     },
   },
 

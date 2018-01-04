@@ -17,13 +17,14 @@ const start = async () => {
   const app = express();
 
   const buildOptions = async (req, res) => {
-    const user = await authenticate(req, mongo.Users);
+    const  dataloaders = buildDataloaders(mongo)
+    const user = await authenticate(req, dataloaders);
     return {
       // works like dependency injection
       context: { 
         mongo, 
         user,
-        dataloaders: buildDataloaders(mongo),
+        dataloaders,
       }, // This context object is passed to all resolvers.
       schema,
     };

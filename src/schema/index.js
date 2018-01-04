@@ -5,9 +5,10 @@ const {
 const resolvers = require('./resolvers');
 
 // Define your types here.
+// @TODO: Please not the pagination implemented will not work on relay frontend due that relay use cursor-based pagination
 const typeDefs = `
   type Query {
-    allLinks(filter: LinkFilter): [Link!]!
+    allLinks(filter: LinkFilter, skip: Int, limit: Int): [Link!]!
   }
 
   input LinkFilter {

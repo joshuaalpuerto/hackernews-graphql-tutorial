@@ -29,9 +29,10 @@ function assertValidLink ({ url }) {
 
 module.exports = {
   Query: {
-    allLinks: async (_, { filter }, { mongo: { Links, Users } } ) => {
+    allLinks: async (_, { filter, skip = 0, limit = 0 }, { mongo: { Links, Users } } ) => {
       let query = filter ? {$or: allLinksBuildFilter(filter)} : {};
-      return await Links.find(query).toArray();
+      
+      return await Links.find(query).limit(limit).skip(skip).toArray();
     },
   },
 

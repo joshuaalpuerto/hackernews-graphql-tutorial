@@ -27,16 +27,22 @@ const typeDefs = `
   }
 
   type Subscription {
-    Link(filter: LinkSubscriptionFilter): LinkSubscriptionPayload
+    Link(filter: SubscriptionFilter): LinkSubscriptionPayload
+    User(filter: SubscriptionFilter): UserSubscriptionPayload
   }
   
-  input LinkSubscriptionFilter {
+  input SubscriptionFilter {
     mutation_in: [_ModelMutationType!]
   }
   
   type LinkSubscriptionPayload {
     mutation: _ModelMutationType!
     node: Link
+  }
+
+  type UserSubscriptionPayload {
+    mutation: _ModelMutationType!
+    node: User
   }
   
   enum _ModelMutationType {

@@ -60,14 +60,20 @@ module.exports = {
     createUser: async (_, args, { mongo: { Users } }) => {
       // You need to convert the given arguments into the format for the
       // `User` type, grabbing email and password from the "authProvider".
-      const newUser = {
+      const bodyDocument = {
           name: args.name,
           email: args.authProvider.email.email,
           password: args.authProvider.email.password,
       };
       // we need to spread this since its mutating our object and its gonna be hard for us to debug it.
-      const response = await Users.insert({ ...newUser });
-      return Object.assign({ id: response.insertedIds[0] }, newUser)
+      const response = await Users.insert({ ...bodyDocument });
+
+      const newUser = Object.assign({ id: response.insertedIds[0] }, bodyDocument)
+      pubsub.publish('User', {
+        User: { mutation: 'CREATED', node: newUser }
+      });
+
+      return newUser;
     },
 
     signinUser: async (root, args, { mongo: { Users } }) => {
@@ -84,6 +90,9 @@ module.exports = {
   Subscription: {
     Link: {
       subscribe: () => pubsub.asyncIterator('Link'),
+    },
+    User: {
+      subscribe: () => pubsub.asyncIterator('User'),
     },
   },
 

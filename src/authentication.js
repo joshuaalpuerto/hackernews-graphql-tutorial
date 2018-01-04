@@ -3,7 +3,7 @@ const HEADER_REGEX = /bearer token-(.*)$/;
 const authenticate = async ({ headers: { authorization } },  { userByEmailLoader }) => {
   // const email = authorization && HEADER_REGEX.exec(authorization)[1];
   // @TODO: authorization not working
-  const email = 'testdev1@gmail.com'
+  const email = 'testdev@gmail.com'
   return email && await userByEmailLoader.load(email);
 }
 

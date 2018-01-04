@@ -10,6 +10,7 @@ const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
 const schema = require('./schema');
 const connectMongo = require('./mongo_connector');
 const buildDataloaders = require('./dataloaders');
+const formatError = require('./formatError');
 const { authenticate } = require('./authentication');
 
 const start = async () => {
@@ -26,6 +27,7 @@ const start = async () => {
         user,
         dataloaders,
       }, // This context object is passed to all resolvers.
+      formatError,
       schema,
     };
   };

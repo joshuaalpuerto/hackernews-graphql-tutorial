@@ -20,9 +20,9 @@ const start = async () => {
   const mongo = await connectMongo();
   const app = express();
   const PORT = 4000
-
+  const dataloaders = buildDataloaders(mongo)
+  
   const buildOptions = async (req, res) => {
-    const  dataloaders = buildDataloaders(mongo)
     const user = await authenticate(req, dataloaders);
     return {
       // works like dependency injection

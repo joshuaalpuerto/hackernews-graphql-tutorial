@@ -26,7 +26,7 @@ module.exports = ({ Users, Votes }) => {
     for (let vote of votes) {
       votesByUserIdLoader.prime(vote.userId, vote);
     }
-    return votes;
+    return votes.length ? votes : [{}]
   }
 
   async function batchVotesByUserId (ids) {
@@ -34,24 +34,30 @@ module.exports = ({ Users, Votes }) => {
     for (let vote of votes) {
       votesByLinkIdLoader.prime(vote.linkId, vote);
     }
-    return votes;
+    
+    return votes.length ? votes : [{}]
   }
 
   async function batchUsersById (ids) {
     const users = await Users.find({ _id: { $in: ids } }).toArray();
+
     for (let user of users) {
       userByEmailLoader.prime(user.email, user);
     }
-    return users;
+
+    return users.length ? users : [{}]
   }
   
   async function batchUsersByUsername (emails) {
     const users = await Users.find({ email: { $in: emails } }).toArray();
+
     for (let user of users) {
       userByIdLoader.prime(user._id, user);
     }
-    return users;
-  }
+
+    console.log(users)
+    return users.length ? users : [{}]
+   }
 
   return {
     userByIdLoader,
